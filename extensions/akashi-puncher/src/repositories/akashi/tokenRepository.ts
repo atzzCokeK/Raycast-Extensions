@@ -45,10 +45,10 @@ const saveStoredToken = async (domain: string, companyId: string, token: StoredT
 };
 
 const isExpiringSoon = (expiredAt: string) => {
-  const expirationDate = dayjs(expiredAt);
+  const expirationDate = dayjs.tz(expiredAt);
   if (!expirationDate.isValid()) return true;
 
-  return expirationDate.diff(dayjs(), "day", true) <= REFRESH_THRESHOLD_DAYS;
+  return expirationDate.diff(dayjs().tz(), "day", true) <= REFRESH_THRESHOLD_DAYS;
 };
 
 const reissueToken = async (domain: string, companyId: string, token: string) => {
@@ -82,7 +82,7 @@ export const getActiveToken = async (domain: string, companyId: string, preferen
     });
     return refreshedToken.token;
   } catch (error) {
-    if (storedToken && hasSamePreferenceToken && dayjs(storedToken.expiredAt).isAfter(dayjs())) {
+    if (storedToken && hasSamePreferenceToken && dayjs.tz(storedToken.expiredAt).isAfter(dayjs().tz())) {
       return storedToken.token;
     }
 
